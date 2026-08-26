@@ -183,14 +183,14 @@ export function LandingPage({ onLoginClick }: { onLoginClick: () => void }) {
         </section>
 
         {/* Platform Pillars Section */}
-        <section id="features-section" className="py-24 max-w-7xl mx-auto px-8 md:px-16 lg:px-24 xl:px-32">
+        <section id="features-section" className="py-16 md:py-24 max-w-7xl mx-auto px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <h2 className="text-3xl font-extrabold text-slate-900 mb-4">Comprehensive Regulatory Platform</h2>
             <p className="text-slate-600">Bringing transparency, efficiency, and safety to urban planning and structure management across all 34 Local Government Areas.</p>
           </div>
 
           {/* Tabs */}
-          <div className="flex flex-wrap justify-center gap-2 mb-10">
+          <div className="flex overflow-x-auto sm:flex-wrap sm:justify-center gap-2 mb-10 pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
             {[
               { id: 'signage', label: 'Outdoor Advertising', icon: Layers },
               { id: 'construction', label: 'Construction Audit', icon: Compass },
@@ -203,7 +203,7 @@ export function LandingPage({ onLoginClick }: { onLoginClick: () => void }) {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex items-center gap-2 px-5 py-3 rounded-full text-sm font-bold transition-all ${
+                  className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-bold transition-all whitespace-nowrap shrink-0 ${
                     isActive
                       ? 'bg-emerald-600 text-white shadow-lg'
                       : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200'
@@ -217,7 +217,7 @@ export function LandingPage({ onLoginClick }: { onLoginClick: () => void }) {
           </div>
 
           {/* Tab Content */}
-          <div className="bg-white border border-slate-100 rounded-3xl p-8 lg:p-12 shadow-xl shadow-slate-200/20">
+          <div className="bg-white border border-slate-100 rounded-2xl sm:rounded-3xl p-4 sm:p-8 lg:p-12 shadow-xl shadow-slate-200/20">
             {activeTab === 'signage' && (
               <div className="grid lg:grid-cols-2 gap-12 items-center">
                 <div className="space-y-5">
@@ -234,12 +234,12 @@ export function LandingPage({ onLoginClick }: { onLoginClick: () => void }) {
                     <li className="flex items-start gap-3"><CheckCircle2 size={18} className="text-emerald-500 shrink-0 mt-0.5" /> Field inspector photo uploads with timestamp and GPS accuracy verification.</li>
                   </ul>
                 </div>
-                <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 text-sm space-y-4">
+                <div className="bg-slate-50 p-4 sm:p-6 rounded-2xl border border-slate-100 text-sm space-y-4">
                   <div className="flex items-center justify-between pb-3 border-b border-slate-200">
                     <span className="font-bold text-slate-500 text-xs uppercase tracking-wider">Sample Asset Record</span>
                     <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">PMT-004 Approved</span>
                   </div>
-                  <div className="grid grid-cols-2 gap-3 text-slate-700">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-slate-700">
                     <div><span className="text-slate-400 block text-xs font-bold uppercase">Structure ID</span>#b104-KanoRd</div>
                     <div><span className="text-slate-400 block text-xs font-bold uppercase">Type</span>Unipole LED (10×20m)</div>
                     <div><span className="text-slate-400 block text-xs font-bold uppercase">Location</span>Katsina Central LGA</div>
@@ -270,12 +270,12 @@ export function LandingPage({ onLoginClick }: { onLoginClick: () => void }) {
                     <li className="flex items-start gap-3"><CheckCircle2 size={18} className="text-blue-500 shrink-0 mt-0.5" /> Estimated footprint mapping with square meter coverage and zoning classification.</li>
                   </ul>
                 </div>
-                <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 text-sm space-y-4">
+                <div className="bg-slate-50 p-4 sm:p-6 rounded-2xl border border-slate-100 text-sm space-y-4">
                   <div className="flex items-center justify-between pb-3 border-b border-slate-200">
                     <span className="font-bold text-slate-500 text-xs uppercase tracking-wider">Case #c108 • Flagged</span>
                     <span className="text-xs font-bold text-rose-600 bg-rose-50 px-2.5 py-1 rounded-full border border-rose-100">Stop Work Active</span>
                   </div>
-                  <div className="grid grid-cols-2 gap-3 text-slate-700">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-slate-700">
                     <div><span className="text-slate-400 block text-xs font-bold uppercase">Detection</span>Satellite Anomaly</div>
                     <div><span className="text-slate-400 block text-xs font-bold uppercase">Est. Footprint</span>450 m²</div>
                     <div><span className="text-slate-400 block text-xs font-bold uppercase">Zone</span>Daura Commercial Sector</div>
@@ -304,7 +304,7 @@ export function LandingPage({ onLoginClick }: { onLoginClick: () => void }) {
                     <li className="flex items-start gap-3"><CheckCircle2 size={18} className="text-amber-500 shrink-0 mt-0.5" /> Cryptographic audit trail for every status change and fee receipt.</li>
                   </ul>
                 </div>
-                <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 text-sm space-y-4">
+                <div className="bg-slate-50 p-4 sm:p-6 rounded-2xl border border-slate-100 text-sm space-y-4">
                   <div className="flex items-center justify-between pb-3 border-b border-slate-200">
                     <span className="font-bold text-slate-500 text-xs uppercase tracking-wider">State IGR Fiscal Audit</span>
                     <span className="text-xs font-bold text-emerald-600">Q3 Real-time</span>
@@ -346,7 +346,7 @@ export function LandingPage({ onLoginClick }: { onLoginClick: () => void }) {
                     <li className="flex items-start gap-3"><CheckCircle2 size={18} className="text-emerald-500 shrink-0 mt-0.5" /> Triaged within 24 hours by URPB zonal enforcement officers.</li>
                   </ul>
                 </div>
-                <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 text-sm space-y-4">
+                <div className="bg-slate-50 p-4 sm:p-6 rounded-2xl border border-slate-100 text-sm space-y-4">
                   <div className="flex items-center justify-between pb-3 border-b border-slate-200">
                     <span className="font-bold text-slate-500 text-xs uppercase tracking-wider">Citizen Tip #t-9812</span>
                     <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">Converted to Case</span>
