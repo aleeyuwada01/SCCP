@@ -1,7 +1,16 @@
 import React, { useState } from 'react';
-import { MessageSquare, Check, AlertCircle, Loader2, MapPin } from 'lucide-react';
+import { MessageSquare, Check, AlertCircle, Loader2, MapPin, Tag } from 'lucide-react';
+
+const VIOLATION_CATEGORIES = [
+  'Hazardous / Leaning Billboard',
+  'Unauthorized Construction',
+  'Road Reserve Encroachment',
+  'Drainage Line Obstruction',
+  'Unregistered Commercial Sign',
+];
 
 export function TipForm({ onTipSubmitted }: { onTipSubmitted?: () => void }) {
+  const [category, setCategory] = useState(VIOLATION_CATEGORIES[0]);
   const [desc, setDesc] = useState('');
   const [phone, setPhone] = useState('');
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
@@ -37,15 +46,15 @@ export function TipForm({ onTipSubmitted }: { onTipSubmitted?: () => void }) {
     
     setStatus('submitting');
     
-    // Fallback to Katsina demo area if location not provided
     const lat = location ? location.lat : 12.9 + Math.random() * 0.1;
     const lng = location ? location.lng : 7.5 + Math.random() * 0.1;
+    const fullDescription = `[${category}] ${desc.trim()}`;
     
     try {
       const res = await fetch('/api/tips', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ description: desc, reporter_phone: phone, lat, lng })
+        body: JSON.stringify({ description: fullDescription, reporter_phone: phone || undefined, lat, lng })
       });
       
       if (!res.ok) throw new Error('Submission failed');
@@ -71,11 +80,34 @@ export function TipForm({ onTipSubmitted }: { onTipSubmitted?: () => void }) {
         <MessageSquare size={20} className="text-emerald-600" /> Report an Issue
       </h3>
       <form onSubmit={submit} className="space-y-5">
+        {/* Category Selector */}
+        <div>
+          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <Tag size={12} className="text-emerald-500" /> Classification *
+          </label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+            {VIOLATION_CATEGORIES.map((cat) => (
+              <button
+                type="button"
+                key={cat}
+                onClick={() => setCategory(cat)}
+                className={`text-left px-3 py-2 rounded-xl text-xs transition-all border ${
+                  category === cat
+                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold'
+                    : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100 hover:text-slate-700'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div>
           <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Description *</label>
           <textarea 
             required 
-            rows={4} 
+            rows={3} 
             value={desc} 
             onChange={e => setDesc(e.target.value)}
             className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all placeholder:text-slate-400 resize-none"
@@ -88,16 +120,26 @@ export function TipForm({ onTipSubmitted }: { onTipSubmitted?: () => void }) {
           <button
             type="button"
             onClick={getLocation}
-            className={`w-full flex items-center justify-center gap-2 px-4 py-3 border rounded-xl text-sm font-semibold transition-all ${
+            className={`w-full flex items-center justify-between px-4 py-3 border rounded-xl text-sm font-semibold transition-all ${
               location ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
             }`}
           >
+            <span className="flex items-center gap-2">
+              <MapPin size={15} className={location ? 'text-emerald-500' : 'text-slate-400'} />
+              {locating ? (
+                'Acquiring GPS...'
+              ) : location ? (
+                `GPS: ${location.lat.toFixed(4)}°N, ${location.lng.toFixed(4)}°E`
+              ) : (
+                'Use Current Location'
+              )}
+            </span>
             {locating ? (
-              <><Loader2 size={16} className="animate-spin" /> Locating...</>
+              <Loader2 size={14} className="animate-spin" />
             ) : location ? (
-              <><Check size={16} /> Location Attached</>
+              <Check size={14} className="text-emerald-500" />
             ) : (
-              <><MapPin size={16} /> Use Current Location</>
+              <span className="text-[10px] text-slate-400">Tap to attach</span>
             )}
           </button>
         </div>
