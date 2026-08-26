@@ -23,6 +23,7 @@ export function Globe() {
       <div className="relative w-[85%] aspect-square rounded-full overflow-hidden" style={{
         background: 'radial-gradient(circle at 35% 30%, #d1fae5, #a7f3d0 30%, #6ee7b7 50%, #34d399 70%, #10b981 85%, #059669 100%)',
         boxShadow: 'inset -30px -30px 60px rgba(0,0,0,0.15), inset 15px 15px 40px rgba(255,255,255,0.25), 0 0 60px rgba(16,185,129,0.2), 0 0 120px rgba(16,185,129,0.1)',
+        animation: 'globeRotateY 60s linear infinite',
       }}>
         {/* Atmosphere highlight */}
         <div className="absolute inset-0 rounded-full" style={{
@@ -108,6 +109,10 @@ export function Globe() {
       </div>
 
       <style>{`
+        @keyframes globeRotateY {
+          0% { transform: rotateY(0deg); }
+          100% { transform: rotateY(360deg); }
+        }
         @keyframes globeSpin {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
