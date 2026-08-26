@@ -78,6 +78,7 @@ export default function App() {
   
   const [showAddBillboard, setShowAddBillboard] = useState(false);
   const [showAddCase, setShowAddCase] = useState(false);
+  const [loginLoading, setLoginLoading] = useState<string | null>(null);
 
   // Map state
   const [mapCenter, setMapCenter] = useState<[number, number]>([12.989, 7.604]);
@@ -253,6 +254,9 @@ export default function App() {
   };
 
   const handleLogin = async (email: string) => {
+    setLoginLoading(email);
+    // Brief delay for UX feel
+    await new Promise(r => setTimeout(r, 800));
     try {
       const res = await fetch('/api/login', {
         method: 'POST',
@@ -265,6 +269,7 @@ export default function App() {
         setCurrentUser(data.user);
         localStorage.setItem('sccp_token', data.token);
         localStorage.setItem('sccp_user', JSON.stringify(data.user));
+        setLoginLoading(null);
         return;
       }
     } catch (err) {
@@ -280,6 +285,7 @@ export default function App() {
     } else {
       alert('Login failed: unknown user');
     }
+    setLoginLoading(null);
   };
 
   const handleLogout = () => {
@@ -450,18 +456,43 @@ export default function App() {
             <p className="text-slate-500 text-sm">Select your role to access the dashboard</p>
           </div>
           <div className="space-y-4">
-            <button onClick={() => handleLogin('admin@sccp.ng')} className="w-full text-left p-5 rounded-2xl border-2 border-slate-100 hover:border-emerald-500 hover:bg-emerald-50/50 transition-all group">
-              <div className="font-bold text-slate-900 text-lg group-hover:text-emerald-800">Admin Supervisor</div>
-              <div className="text-sm text-slate-500 mt-1">Full access (CRUD), analytics</div>
-            </button>
-            <button onClick={() => handleLogin('rev@sccp.ng')} className="w-full text-left p-5 rounded-2xl border-2 border-slate-100 hover:border-amber-500 hover:bg-amber-50/50 transition-all group">
-              <div className="font-bold text-slate-900 text-lg group-hover:text-amber-800">Revenue Officer</div>
-              <div className="text-sm text-slate-500 mt-1">Mark payments, convert tips</div>
-            </button>
-            <button onClick={() => handleLogin('insp1@sccp.ng')} className="w-full text-left p-5 rounded-2xl border-2 border-slate-100 hover:border-indigo-500 hover:bg-indigo-50/50 transition-all group">
-              <div className="font-bold text-slate-900 text-lg group-hover:text-indigo-800">Field Inspector</div>
-              <div className="text-sm text-slate-500 mt-1">Register billboards, view cases</div>
-            </button>
+            {[
+              { email: 'admin@sccp.ng', label: 'Admin Supervisor', desc: 'Full access (CRUD), analytics', icon: '🛡️', activeClass: 'border-emerald-500 bg-emerald-50/50', hoverClass: 'hover:border-emerald-500 hover:bg-emerald-50/50', textActive: 'text-emerald-800', textHover: 'text-slate-900 group-hover:text-emerald-800' },
+              { email: 'rev@sccp.ng', label: 'Revenue Officer', desc: 'Mark payments, convert tips', icon: '💰', activeClass: 'border-amber-500 bg-amber-50/50', hoverClass: 'hover:border-amber-500 hover:bg-amber-50/50', textActive: 'text-amber-800', textHover: 'text-slate-900 group-hover:text-amber-800' },
+              { email: 'insp1@sccp.ng', label: 'Field Inspector', desc: 'Register billboards, view cases', icon: '🔍', activeClass: 'border-indigo-500 bg-indigo-50/50', hoverClass: 'hover:border-indigo-500 hover:bg-indigo-50/50', textActive: 'text-indigo-800', textHover: 'text-slate-900 group-hover:text-indigo-800' },
+            ].map(role => {
+              const isLoading = loginLoading === role.email;
+              const isDisabled = loginLoading !== null;
+              return (
+                <button
+                  key={role.email}
+                  onClick={() => handleLogin(role.email)}
+                  disabled={isDisabled}
+                  className={`w-full text-left p-5 rounded-2xl border-2 transition-all group relative overflow-hidden ${
+                    isLoading
+                      ? role.activeClass
+                      : isDisabled
+                        ? 'border-slate-100 opacity-50 cursor-not-allowed'
+                        : `border-slate-100 ${role.hoverClass}`
+                  }`}
+                >
+                  {isLoading && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent" style={{ backgroundSize: '200% 100%', animation: 'shimmer 1.5s ease-in-out infinite' }} />
+                  )}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className={`font-bold text-lg flex items-center gap-2 ${isLoading ? role.textActive : role.textHover}`}>
+                        <span>{role.icon}</span> {role.label}
+                      </div>
+                      <div className="text-sm text-slate-500 mt-1">{isLoading ? 'Authenticating...' : role.desc}</div>
+                    </div>
+                    {isLoading && (
+                      <div className="w-6 h-6 border-2 border-slate-300 border-t-emerald-600 rounded-full animate-spin shrink-0" />
+                    )}
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
