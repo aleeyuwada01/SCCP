@@ -22,22 +22,6 @@ export function Globe() {
               pulse: true,
               showLabel: true,
               action: "none"
-            },
-            {
-              name: "Abuja",
-              coordinates: "9.058, 7.491",
-              color: "#10b981",
-              pulse: false,
-              showLabel: true,
-              action: "none"
-            },
-            {
-              name: "Lagos",
-              coordinates: "6.524, 3.379",
-              color: "#10b981",
-              pulse: false,
-              showLabel: true,
-              action: "none"
             }
           ]}
         />
