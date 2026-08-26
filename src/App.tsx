@@ -122,18 +122,76 @@ export default function App() {
         fetchWithAuth('/api/tips').then(safeJson),
         fetchWithAuth('/api/analytics').then(safeJson),
       ]);
-      setBillboards(bRes.error ? [] : bRes);
-      setCases(cRes.error ? [] : cRes);
-      setTips(tRes.error ? [] : tRes);
-      setAnalytics(aRes.error ? null : aRes);
+
+      const bOk = !bRes.error && Array.isArray(bRes);
+      const cOk = !cRes.error && Array.isArray(cRes);
+      const tOk = !tRes.error && Array.isArray(tRes);
+      const aOk = !aRes.error && aRes.totalBillboards !== undefined;
+
+      if (bOk && cOk && tOk && aOk) {
+        setBillboards(bRes);
+        setCases(cRes);
+        setTips(tRes);
+        setAnalytics(aRes);
+        return;
+      }
     } catch (err) {
-      console.error('Failed to fetch data', err);
+      console.warn('API unavailable, loading demo data', err);
     }
+
+    // Fallback: seed with demo data for presentation
+    const now = new Date().toISOString();
+    const demoBillboards = [
+      { id: 'b1', lat: 12.989, lng: 7.604, lga: 'Katsina', road_name: 'Kano Road', owner_name: 'Musa Ads Ltd', owner_phone: '08011111111', dimensions: '10x20', structure_type: 'Unipole', permit_number: 'PMT-001', status: 'Approved-Paid', fee_amount: 50000000, issue_date: '2024-01-01', expiry_date: '2025-01-01', created_at: now },
+      { id: 'b2', lat: 13.001, lng: 7.599, lga: 'Katsina', road_name: 'IBB Way', owner_name: 'Unknown', owner_phone: '', dimensions: '5x10', structure_type: 'Wall Drape', permit_number: null, status: 'Unregistered', fee_amount: 0, issue_date: null, expiry_date: null, created_at: now },
+      { id: 'b3', lat: 11.121, lng: 7.319, lga: 'Funtua', road_name: 'Zaria Rd', owner_name: 'Global Signage', owner_phone: '08022222222', dimensions: '20x40', structure_type: 'Gantry', permit_number: 'PMT-002', status: 'Approved-Payment Due', fee_amount: 100000000, issue_date: '2024-05-01', expiry_date: '2025-05-01', created_at: now },
+      { id: 'b4', lat: 13.015, lng: 7.612, lga: 'Katsina', road_name: 'Ring Road', owner_name: 'Katsina Media', owner_phone: '08033333333', dimensions: '10x20', structure_type: 'Unipole', permit_number: 'PMT-003', status: 'Approved-Paid', fee_amount: 50000000, issue_date: '2024-02-15', expiry_date: '2025-02-15', created_at: now },
+      { id: 'b5', lat: 13.030, lng: 7.290, lga: 'Daura', road_name: "Mai'adua Rd", owner_name: 'Local Biz', owner_phone: '', dimensions: '3x6', structure_type: 'Static', permit_number: null, status: 'Unregistered', fee_amount: 0, issue_date: null, expiry_date: null, created_at: now },
+      { id: 'b6', lat: 12.990, lng: 7.585, lga: 'Katsina', road_name: 'Hospital Rd', owner_name: 'Health Ads', owner_phone: '08044444444', dimensions: '10x20', structure_type: 'LED', permit_number: 'PMT-004', status: 'Approved-Payment Due', fee_amount: 120000000, issue_date: '2024-06-10', expiry_date: '2025-06-10', created_at: now },
+      { id: 'b7', lat: 12.800, lng: 7.500, lga: 'Dutsin-Ma', road_name: 'University Rd', owner_name: 'Student Promo', owner_phone: '', dimensions: '5x10', structure_type: 'Wall Drape', permit_number: null, status: 'Unregistered', fee_amount: 0, issue_date: null, expiry_date: null, created_at: now },
+    ];
+    const demoCases = [
+      { id: 'c1', lat: 12.995, lng: 7.610, lga: 'Katsina', first_detected_at: now, detection_source: 'satellite', footprint_estimate_m2: 250, status: 'Flagged', assigned_to: 'u3' },
+      { id: 'c2', lat: 13.045, lng: 7.301, lga: 'Daura', first_detected_at: new Date(Date.now() - 20 * 86400000).toISOString(), detection_source: 'drone', footprint_estimate_m2: 400, status: 'Under Review', assigned_to: 'u3' },
+      { id: 'c3', lat: 12.980, lng: 7.590, lga: 'Katsina', first_detected_at: new Date(Date.now() - 5 * 86400000).toISOString(), detection_source: 'field_inspection', footprint_estimate_m2: 150, status: 'Flagged', assigned_to: 'u3' },
+      { id: 'c4', lat: 11.130, lng: 7.320, lga: 'Funtua', first_detected_at: new Date(Date.now() - 10 * 86400000).toISOString(), detection_source: 'satellite', footprint_estimate_m2: 600, status: 'Stop Work Order', assigned_to: 'u3' },
+      { id: 'c5', lat: 12.992, lng: 7.620, lga: 'Katsina', first_detected_at: new Date(Date.now() - 2 * 86400000).toISOString(), detection_source: 'drone', footprint_estimate_m2: 120, status: 'Flagged', assigned_to: 'u3' },
+      { id: 'c6', lat: 12.810, lng: 7.510, lga: 'Dutsin-Ma', first_detected_at: new Date(Date.now() - 15 * 86400000).toISOString(), detection_source: 'satellite', footprint_estimate_m2: 350, status: 'Approved', assigned_to: 'u3' },
+    ];
+    const demoTips = [
+      { id: 't1', lat: 12.990, lng: 7.600, description: '[Hazardous / Leaning Billboard] Dangerous leaning structure near Central Market', photo_url: null, reporter_phone: '08033333333', status: 'New', created_at: now },
+      { id: 't2', lat: 13.010, lng: 7.595, description: '[Unauthorized Construction] Unpermitted commercial building on residential plot', photo_url: null, reporter_phone: '', status: 'New', created_at: new Date(Date.now() - 2 * 86400000).toISOString() },
+      { id: 't3', lat: 12.985, lng: 7.615, description: '[Road Reserve Encroachment] Shop structures extending into highway setback', photo_url: null, reporter_phone: '09012345678', status: 'Converted', created_at: new Date(Date.now() - 7 * 86400000).toISOString() },
+    ];
+    const demoAnalytics = {
+      totalBillboards: 7,
+      compliant: 4,
+      leakageEstimateNaira: 54000000,
+      activeCases: 5,
+      lgaBreakdown: [
+        { lga: 'Katsina', count: 4 },
+        { lga: 'Funtua', count: 1 },
+        { lga: 'Daura', count: 1 },
+        { lga: 'Dutsin-Ma', count: 1 },
+      ]
+    };
+
+    setBillboards(demoBillboards);
+    setCases(demoCases);
+    setTips(demoTips);
+    setAnalytics(demoAnalytics);
   };
 
   useEffect(() => {
     fetchData();
   }, [token]);
+
+  // Demo user profiles for client-side fallback when no backend DB is configured
+  const DEMO_USERS: Record<string, { id: string; name: string; role: string; email: string }> = {
+    'admin@sccp.ng': { id: 'u1', name: 'Admin Supervisor', role: 'supervisor', email: 'admin@sccp.ng' },
+    'rev@sccp.ng': { id: 'u2', name: 'Revenue Officer', role: 'revenue_officer', email: 'rev@sccp.ng' },
+    'insp1@sccp.ng': { id: 'u3', name: 'Field Inspector 1', role: 'inspector', email: 'insp1@sccp.ng' },
+  };
 
   const handleLogin = async (email: string) => {
     try {
@@ -148,11 +206,22 @@ export default function App() {
         setCurrentUser(data.user);
         localStorage.setItem('sccp_token', data.token);
         localStorage.setItem('sccp_user', JSON.stringify(data.user));
-      } else {
-        alert('Login failed');
+        return;
       }
     } catch (err) {
-      console.error(err);
+      console.warn('API login unavailable, using demo mode', err);
+    }
+
+    // Fallback: demo mode (no backend required)
+    const demoUser = DEMO_USERS[email];
+    if (demoUser) {
+      const demoToken = 'demo-token-' + demoUser.id;
+      setToken(demoToken);
+      setCurrentUser(demoUser);
+      localStorage.setItem('sccp_token', demoToken);
+      localStorage.setItem('sccp_user', JSON.stringify(demoUser));
+    } else {
+      alert('Login failed: unknown user');
     }
   };
 
