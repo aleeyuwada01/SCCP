@@ -110,8 +110,8 @@ export function Globe() {
 
       <style>{`
         @keyframes globeRotateY {
-          0% { transform: rotateY(0deg); }
-          100% { transform: rotateY(360deg); }
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
         }
         @keyframes globeSpin {
           from { transform: rotate(0deg); }
