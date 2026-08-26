@@ -154,6 +154,13 @@ export default function App() {
     }
   };
 
+  // Load citizen-submitted tips from localStorage (submitted via landing page TipForm)
+  const loadCitizenTips = (): any[] => {
+    try {
+      return JSON.parse(localStorage.getItem('sccp_citizen_tips') || '[]');
+    } catch { return []; }
+  };
+
   const fetchData = async () => {
     if (!token) return;
     try {
@@ -170,9 +177,14 @@ export default function App() {
       const aOk = !aRes.error && aRes.totalBillboards !== undefined;
 
       if (bOk && cOk && tOk && aOk) {
+        // Merge citizen-submitted tips from localStorage
+        const citizenTips = loadCitizenTips();
+        const existingIds = new Set(tRes.map((t: any) => t.id));
+        const newCitizenTips = citizenTips.filter((t: any) => !existingIds.has(t.id));
+
         setBillboards(bRes);
         setCases(cRes);
-        setTips(tRes);
+        setTips([...tRes, ...newCitizenTips]);
         setAnalytics(aRes);
         return;
       }
@@ -219,9 +231,13 @@ export default function App() {
       ]
     };
 
+    // Merge citizen-submitted tips from localStorage
+    const citizenTips = loadCitizenTips();
+    const allTips = [...demoTips, ...citizenTips];
+
     setBillboards(demoBillboards);
     setCases(demoCases);
-    setTips(demoTips);
+    setTips(allTips);
     setAnalytics(demoAnalytics);
   };
 
