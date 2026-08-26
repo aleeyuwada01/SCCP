@@ -219,19 +219,19 @@ export function LandingPage({ onLoginClick }: { onLoginClick: () => void }) {
           {/* Tab Content */}
           <div className="bg-white border border-slate-100 rounded-2xl sm:rounded-3xl p-4 sm:p-8 lg:p-12 shadow-xl shadow-slate-200/20">
             {activeTab === 'signage' && (
-              <div className="grid lg:grid-cols-2 gap-12 items-center">
-                <div className="space-y-5">
+              <div className="grid lg:grid-cols-2 gap-6 lg:gap-12 items-center">
+                <div className="space-y-4">
                   <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center">
                     <Layers size={24} className="text-emerald-600" />
                   </div>
-                  <h3 className="text-2xl font-bold text-slate-900">Automated Billboard Inventory & Spatial Auditing</h3>
-                  <p className="text-slate-600 leading-relaxed">
+                  <h3 className="text-lg sm:text-2xl font-bold text-slate-900">Automated Billboard Inventory & Spatial Auditing</h3>
+                  <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
                     Every outdoor structure in Katsina State—from unipolar displays on Kano Road to commercial gantries in Funtua—is registered with verified GPS coordinates, structural dimensions, owner contacts, and permit renewal cycles.
                   </p>
-                  <ul className="space-y-3 text-sm text-slate-600">
-                    <li className="flex items-start gap-3"><CheckCircle2 size={18} className="text-emerald-500 shrink-0 mt-0.5" /> Real-time status color coding: <strong>Approved-Paid</strong>, <strong>Payment Due</strong>, and <strong>Unregistered</strong>.</li>
-                    <li className="flex items-start gap-3"><CheckCircle2 size={18} className="text-emerald-500 shrink-0 mt-0.5" /> Automatic setback calculation to ensure clearance from public highways and utility poles.</li>
-                    <li className="flex items-start gap-3"><CheckCircle2 size={18} className="text-emerald-500 shrink-0 mt-0.5" /> Field inspector photo uploads with timestamp and GPS accuracy verification.</li>
+                  <ul className="space-y-2 sm:space-y-3 text-xs sm:text-sm text-slate-600">
+                    <li className="flex items-start gap-2 sm:gap-3"><CheckCircle2 size={16} className="text-emerald-500 shrink-0 mt-0.5" /> Real-time status color coding: <strong>Approved-Paid</strong>, <strong>Payment Due</strong>, and <strong>Unregistered</strong>.</li>
+                    <li className="flex items-start gap-2 sm:gap-3"><CheckCircle2 size={16} className="text-emerald-500 shrink-0 mt-0.5" /> Automatic setback calculation to ensure clearance from public highways and utility poles.</li>
+                    <li className="flex items-start gap-2 sm:gap-3"><CheckCircle2 size={16} className="text-emerald-500 shrink-0 mt-0.5" /> Field inspector photo uploads with timestamp and GPS accuracy verification.</li>
                   </ul>
                 </div>
                 <div className="bg-slate-50 p-4 sm:p-6 rounded-2xl border border-slate-100 text-sm space-y-4">
@@ -260,14 +260,14 @@ export function LandingPage({ onLoginClick }: { onLoginClick: () => void }) {
                   <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center">
                     <Compass size={24} className="text-blue-600" />
                   </div>
-                  <h3 className="text-2xl font-bold text-slate-900">Satellite & Drone Encroachment Surveillance</h3>
-                  <p className="text-slate-600 leading-relaxed">
+                  <h3 className="text-lg sm:text-2xl font-bold text-slate-900">Satellite & Drone Encroachment Surveillance</h3>
+                  <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
                     Protecting municipal master plans by automatically flagging unapproved site development, drainage line obstructions, and high-rise developments before construction proceeds beyond foundation stages.
                   </p>
-                  <ul className="space-y-3 text-sm text-slate-600">
-                    <li className="flex items-start gap-3"><CheckCircle2 size={18} className="text-blue-500 shrink-0 mt-0.5" /> Detection from high-resolution satellite imagery, commercial drones, and field patrols.</li>
-                    <li className="flex items-start gap-3"><CheckCircle2 size={18} className="text-blue-500 shrink-0 mt-0.5" /> Instant Stop-Work Order generation with digital case tracking.</li>
-                    <li className="flex items-start gap-3"><CheckCircle2 size={18} className="text-blue-500 shrink-0 mt-0.5" /> Estimated footprint mapping with square meter coverage and zoning classification.</li>
+                  <ul className="space-y-2 sm:space-y-3 text-xs sm:text-sm text-slate-600">
+                    <li className="flex items-start gap-2 sm:gap-3"><CheckCircle2 size={16} className="text-blue-500 shrink-0 mt-0.5" /> Detection from high-resolution satellite imagery, commercial drones, and field patrols.</li>
+                    <li className="flex items-start gap-2 sm:gap-3"><CheckCircle2 size={16} className="text-blue-500 shrink-0 mt-0.5" /> Instant Stop-Work Order generation with digital case tracking.</li>
+                    <li className="flex items-start gap-2 sm:gap-3"><CheckCircle2 size={16} className="text-blue-500 shrink-0 mt-0.5" /> Estimated footprint mapping with square meter coverage and zoning classification.</li>
                   </ul>
                 </div>
                 <div className="bg-slate-50 p-4 sm:p-6 rounded-2xl border border-slate-100 text-sm space-y-4">
@@ -294,14 +294,14 @@ export function LandingPage({ onLoginClick }: { onLoginClick: () => void }) {
                   <div className="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center">
                     <BarChart3 size={24} className="text-amber-600" />
                   </div>
-                  <h3 className="text-2xl font-bold text-slate-900">Treasury Protection & Automated Billing</h3>
-                  <p className="text-slate-600 leading-relaxed">
+                  <h3 className="text-lg sm:text-2xl font-bold text-slate-900">Treasury Protection & Automated Billing</h3>
+                  <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
                     Eliminating manual revenue leakages through standardized digital billing tiers, invoice generation, direct banking reconciliation, and automatic penalty surcharges for overdue compliance.
                   </p>
-                  <ul className="space-y-3 text-sm text-slate-600">
-                    <li className="flex items-start gap-3"><CheckCircle2 size={18} className="text-amber-500 shrink-0 mt-0.5" /> Role-based revenue officer clearance: only verified staff can approve tax receipts.</li>
-                    <li className="flex items-start gap-3"><CheckCircle2 size={18} className="text-amber-500 shrink-0 mt-0.5" /> Real-time revenue leakage projection based on unregistered structure count.</li>
-                    <li className="flex items-start gap-3"><CheckCircle2 size={18} className="text-amber-500 shrink-0 mt-0.5" /> Cryptographic audit trail for every status change and fee receipt.</li>
+                  <ul className="space-y-2 sm:space-y-3 text-xs sm:text-sm text-slate-600">
+                    <li className="flex items-start gap-2 sm:gap-3"><CheckCircle2 size={16} className="text-amber-500 shrink-0 mt-0.5" /> Role-based revenue officer clearance: only verified staff can approve tax receipts.</li>
+                    <li className="flex items-start gap-2 sm:gap-3"><CheckCircle2 size={16} className="text-amber-500 shrink-0 mt-0.5" /> Real-time revenue leakage projection based on unregistered structure count.</li>
+                    <li className="flex items-start gap-2 sm:gap-3"><CheckCircle2 size={16} className="text-amber-500 shrink-0 mt-0.5" /> Cryptographic audit trail for every status change and fee receipt.</li>
                   </ul>
                 </div>
                 <div className="bg-slate-50 p-4 sm:p-6 rounded-2xl border border-slate-100 text-sm space-y-4">
@@ -336,14 +336,14 @@ export function LandingPage({ onLoginClick }: { onLoginClick: () => void }) {
                   <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center">
                     <Users size={24} className="text-emerald-600" />
                   </div>
-                  <h3 className="text-2xl font-bold text-slate-900">Anonymous Whistleblower & Citizen Intake</h3>
-                  <p className="text-slate-600 leading-relaxed">
+                  <h3 className="text-lg sm:text-2xl font-bold text-slate-900">Anonymous Whistleblower & Citizen Intake</h3>
+                  <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
                     Every citizen in Katsina State can act as a vigilant observer. Submit unapproved structures or hazardous billboards directly with GPS location and photo evidence without exposing personal identity.
                   </p>
-                  <ul className="space-y-3 text-sm text-slate-600">
-                    <li className="flex items-start gap-3"><CheckCircle2 size={18} className="text-emerald-500 shrink-0 mt-0.5" /> Zero IP or personal tracking; optional callback phone for reward programs.</li>
-                    <li className="flex items-start gap-3"><CheckCircle2 size={18} className="text-emerald-500 shrink-0 mt-0.5" /> One-click conversion from public tip into active billboard or construction case.</li>
-                    <li className="flex items-start gap-3"><CheckCircle2 size={18} className="text-emerald-500 shrink-0 mt-0.5" /> Triaged within 24 hours by URPB zonal enforcement officers.</li>
+                  <ul className="space-y-2 sm:space-y-3 text-xs sm:text-sm text-slate-600">
+                    <li className="flex items-start gap-2 sm:gap-3"><CheckCircle2 size={16} className="text-emerald-500 shrink-0 mt-0.5" /> Zero IP or personal tracking; optional callback phone for reward programs.</li>
+                    <li className="flex items-start gap-2 sm:gap-3"><CheckCircle2 size={16} className="text-emerald-500 shrink-0 mt-0.5" /> One-click conversion from public tip into active billboard or construction case.</li>
+                    <li className="flex items-start gap-2 sm:gap-3"><CheckCircle2 size={16} className="text-emerald-500 shrink-0 mt-0.5" /> Triaged within 24 hours by URPB zonal enforcement officers.</li>
                   </ul>
                 </div>
                 <div className="bg-slate-50 p-4 sm:p-6 rounded-2xl border border-slate-100 text-sm space-y-4">
