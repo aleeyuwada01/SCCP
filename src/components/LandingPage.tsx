@@ -309,16 +309,16 @@ export function LandingPage({ onLoginClick }: { onLoginClick: () => void }) {
                     <span className="font-bold text-slate-500 text-xs uppercase tracking-wider">State IGR Fiscal Audit</span>
                     <span className="text-xs font-bold text-emerald-600">Q3 Real-time</span>
                   </div>
-                  <div className="space-y-2 text-slate-700">
-                    <div className="flex justify-between p-3 rounded-xl bg-white border border-slate-100">
+                  <div className="space-y-2 text-slate-700 text-xs sm:text-sm">
+                    <div className="flex flex-col sm:flex-row sm:justify-between gap-1 p-3 rounded-xl bg-white border border-slate-100">
                       <span>Compliant Permits Collected:</span>
                       <span className="font-bold text-emerald-600">₦320,500,000</span>
                     </div>
-                    <div className="flex justify-between p-3 rounded-xl bg-white border border-slate-100">
+                    <div className="flex flex-col sm:flex-row sm:justify-between gap-1 p-3 rounded-xl bg-white border border-slate-100">
                       <span>Unregistered Signage Backlog:</span>
                       <span className="font-bold text-amber-600">₦184,000,000</span>
                     </div>
-                    <div className="flex justify-between p-3 rounded-xl bg-white border border-slate-100">
+                    <div className="flex flex-col sm:flex-row sm:justify-between gap-1 p-3 rounded-xl bg-white border border-slate-100">
                       <span>Enforcement Penalties:</span>
                       <span className="font-bold text-blue-600">₦36,000,000</span>
                     </div>
