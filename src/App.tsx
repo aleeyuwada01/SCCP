@@ -71,8 +71,8 @@ export default function App() {
   const [tips, setTips] = useState<any[]>([]);
   const [analytics, setAnalytics] = useState<any>(null);
 
-  const [token, setToken] = useState(localStorage.getItem('sccp_token') || '');
-  const [currentUser, setCurrentUser] = useState<any>(JSON.parse(localStorage.getItem('sccp_user') || 'null'));
+  const [token, setToken] = useState(localStorage.getItem('urpb_token') || '');
+  const [currentUser, setCurrentUser] = useState<any>(JSON.parse(localStorage.getItem('urpb_user') || 'null'));
   const [showLogin, setShowLogin] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   
@@ -158,7 +158,7 @@ export default function App() {
   // Load citizen-submitted tips from localStorage (submitted via landing page TipForm)
   const loadCitizenTips = (): any[] => {
     try {
-      return JSON.parse(localStorage.getItem('sccp_citizen_tips') || '[]');
+      return JSON.parse(localStorage.getItem('urpb_citizen_tips') || '[]');
     } catch { return []; }
   };
 
@@ -248,9 +248,9 @@ export default function App() {
 
   // Demo user profiles
   const DEMO_USERS: Record<string, { id: string; name: string; role: string; email: string }> = {
-    'admin@sccp.ng': { id: 'u1', name: 'Admin Supervisor', role: 'supervisor', email: 'admin@sccp.ng' },
-    'rev@sccp.ng': { id: 'u2', name: 'Revenue Officer', role: 'revenue_officer', email: 'rev@sccp.ng' },
-    'insp1@sccp.ng': { id: 'u3', name: 'Field Inspector 1', role: 'inspector', email: 'insp1@sccp.ng' },
+    'admin@urpb.ng': { id: 'u1', name: 'Admin Supervisor', role: 'supervisor', email: 'admin@urpb.ng' },
+    'rev@urpb.ng': { id: 'u2', name: 'Revenue Officer', role: 'revenue_officer', email: 'rev@urpb.ng' },
+    'insp1@urpb.ng': { id: 'u3', name: 'Field Inspector 1', role: 'inspector', email: 'insp1@urpb.ng' },
   };
 
   const handleLogin = async (email: string) => {
@@ -267,8 +267,8 @@ export default function App() {
         const data = await res.json();
         setToken(data.token);
         setCurrentUser(data.user);
-        localStorage.setItem('sccp_token', data.token);
-        localStorage.setItem('sccp_user', JSON.stringify(data.user));
+        localStorage.setItem('urpb_token', data.token);
+        localStorage.setItem('urpb_user', JSON.stringify(data.user));
         setLoginLoading(null);
         return;
       }
@@ -280,8 +280,8 @@ export default function App() {
       const demoToken = 'demo-token-' + demoUser.id;
       setToken(demoToken);
       setCurrentUser(demoUser);
-      localStorage.setItem('sccp_token', demoToken);
-      localStorage.setItem('sccp_user', JSON.stringify(demoUser));
+      localStorage.setItem('urpb_token', demoToken);
+      localStorage.setItem('urpb_user', JSON.stringify(demoUser));
     } else {
       alert('Login failed: unknown user');
     }
@@ -291,8 +291,8 @@ export default function App() {
   const handleLogout = () => {
     setToken('');
     setCurrentUser(null);
-    localStorage.removeItem('sccp_token');
-    localStorage.removeItem('sccp_user');
+    localStorage.removeItem('urpb_token');
+    localStorage.removeItem('urpb_user');
     setShowLogin(false);
   };
 
@@ -457,9 +457,9 @@ export default function App() {
           </div>
           <div className="space-y-4">
             {[
-              { email: 'admin@sccp.ng', label: 'Admin Supervisor', desc: 'Full access (CRUD), analytics', icon: '🛡️', activeClass: 'border-emerald-500 bg-emerald-50/50', hoverClass: 'hover:border-emerald-500 hover:bg-emerald-50/50', textActive: 'text-emerald-800', textHover: 'text-slate-900 group-hover:text-emerald-800' },
-              { email: 'rev@sccp.ng', label: 'Revenue Officer', desc: 'Mark payments, convert tips', icon: '💰', activeClass: 'border-amber-500 bg-amber-50/50', hoverClass: 'hover:border-amber-500 hover:bg-amber-50/50', textActive: 'text-amber-800', textHover: 'text-slate-900 group-hover:text-amber-800' },
-              { email: 'insp1@sccp.ng', label: 'Field Inspector', desc: 'Register billboards, view cases', icon: '🔍', activeClass: 'border-indigo-500 bg-indigo-50/50', hoverClass: 'hover:border-indigo-500 hover:bg-indigo-50/50', textActive: 'text-indigo-800', textHover: 'text-slate-900 group-hover:text-indigo-800' },
+              { email: 'admin@urpb.ng', label: 'Admin Supervisor', desc: 'Full access (CRUD), analytics', icon: '🛡️', activeClass: 'border-emerald-500 bg-emerald-50/50', hoverClass: 'hover:border-emerald-500 hover:bg-emerald-50/50', textActive: 'text-emerald-800', textHover: 'text-slate-900 group-hover:text-emerald-800' },
+              { email: 'rev@urpb.ng', label: 'Revenue Officer', desc: 'Mark payments, convert tips', icon: '💰', activeClass: 'border-amber-500 bg-amber-50/50', hoverClass: 'hover:border-amber-500 hover:bg-amber-50/50', textActive: 'text-amber-800', textHover: 'text-slate-900 group-hover:text-amber-800' },
+              { email: 'insp1@urpb.ng', label: 'Field Inspector', desc: 'Register billboards, view cases', icon: '🔍', activeClass: 'border-indigo-500 bg-indigo-50/50', hoverClass: 'hover:border-indigo-500 hover:bg-indigo-50/50', textActive: 'text-indigo-800', textHover: 'text-slate-900 group-hover:text-indigo-800' },
             ].map(role => {
               const isLoading = loginLoading === role.email;
               const isDisabled = loginLoading !== null;
@@ -520,7 +520,7 @@ export default function App() {
             </div>
             {isSidebarOpen && (
               <div className="whitespace-nowrap">
-                <h1 className="text-2xl font-black tracking-tight leading-none">SCCP</h1>
+                <h1 className="text-2xl font-black tracking-tight leading-none">URPB</h1>
                 <span className="block text-[11px] font-bold text-emerald-300 uppercase tracking-widest mt-1">Katsina URPB</span>
               </div>
             )}
@@ -538,7 +538,7 @@ export default function App() {
         {/* Sidebar Footer */}
         {isSidebarOpen && (
           <div className="p-4 border-t border-slate-200 text-[10px] text-slate-400 font-medium">
-            <p>SCCP v2.0 • Demo Mode</p>
+            <p>URPB v2.0 • Demo Mode</p>
             <p className="mt-0.5">Katsina State URPB</p>
           </div>
         )}
@@ -648,29 +648,30 @@ export default function App() {
               </MapContainer>
 
               {/* Layer Toggle Panel */}
-              <div className="absolute top-4 right-4 bg-white/95 backdrop-blur p-4 rounded-xl shadow-lg border border-slate-200 text-xs font-semibold z-[400] space-y-3 pointer-events-auto w-52">
+              <div className="absolute top-4 right-4 bg-white/95 backdrop-blur p-4 rounded-xl shadow-lg border border-slate-200 text-xs font-semibold z-[400] space-y-3 pointer-events-auto w-56">
                 <div className="text-[10px] text-slate-400 uppercase tracking-widest font-bold mb-1">Map Layers</div>
                 <label className="flex items-center justify-between cursor-pointer group">
-                  <span className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Signage</span>
+                  <span className="flex items-center gap-2"><span className="w-3 h-3 rounded-sm bg-emerald-600"></span> Signage</span>
                   <button onClick={() => setShowSignageLayer(!showSignageLayer)} className={`p-1 rounded transition-colors ${showSignageLayer ? 'text-emerald-600' : 'text-slate-300'}`}>
                     {showSignageLayer ? <Eye size={14} /> : <EyeOff size={14} />}
                   </button>
                 </label>
                 <label className="flex items-center justify-between cursor-pointer group">
-                  <span className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-orange-500"></span> Construction</span>
+                  <span className="flex items-center gap-2"><span className="w-3 h-3 rounded-sm bg-orange-600"></span> Construction</span>
                   <button onClick={() => setShowConstructionLayer(!showConstructionLayer)} className={`p-1 rounded transition-colors ${showConstructionLayer ? 'text-orange-600' : 'text-slate-300'}`}>
                     {showConstructionLayer ? <Eye size={14} /> : <EyeOff size={14} />}
                   </button>
                 </label>
                 <label className="flex items-center justify-between cursor-pointer group">
-                  <span className="flex items-center gap-2"><span className="w-2.5 h-2.5 rounded-full bg-indigo-500"></span> Public Tips</span>
-                  <button onClick={() => setShowTipsLayer(!showTipsLayer)} className={`p-1 rounded transition-colors ${showTipsLayer ? 'text-indigo-600' : 'text-slate-300'}`}>
+                  <span className="flex items-center gap-2"><span className="w-3 h-3 rounded-sm bg-violet-600"></span> Public Tips</span>
+                  <button onClick={() => setShowTipsLayer(!showTipsLayer)} className={`p-1 rounded transition-colors ${showTipsLayer ? 'text-violet-600' : 'text-slate-300'}`}>
                     {showTipsLayer ? <Eye size={14} /> : <EyeOff size={14} />}
                   </button>
                 </label>
-                <div className="border-t border-slate-100 pt-2 space-y-1.5 text-[10px] text-slate-400">
-                  <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500"></span> Compliant</div>
-                  <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-500"></span> Payment Due</div>
+                <div className="border-t border-slate-100 pt-2.5 space-y-2 text-[10px] text-slate-500">
+                  <div className="text-[9px] text-slate-400 uppercase tracking-widest font-bold">Signage Status</div>
+                  <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500"></span> Compliant (Paid)</div>
+                  <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-400"></span> Payment Due</div>
                   <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-rose-500"></span> Unregistered</div>
                 </div>
               </div>

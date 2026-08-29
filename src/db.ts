@@ -1,7 +1,7 @@
 import { createClient } from '@libsql/client';
 import path from 'path';
 
-const dbPath = path.resolve(process.cwd(), 'sccp.db');
+const dbPath = path.resolve(process.cwd(), 'urpb.db');
 export const db = createClient({ url: `file:${dbPath}` });
 
 export async function initDb() {
@@ -136,15 +136,15 @@ export async function seedDb() {
     // Seed initial data
     await db.execute({
       sql: 'INSERT INTO users VALUES (?, ?, ?, ?, ?, ?)',
-      args: ['u1', 'Admin Supervisor', 'admin@sccp.ng', '08000000001', 'supervisor', 'hash123']
+      args: ['u1', 'Admin Supervisor', 'admin@urpb.ng', '08000000001', 'supervisor', 'hash123']
     });
     await db.execute({
       sql: 'INSERT INTO users VALUES (?, ?, ?, ?, ?, ?)',
-      args: ['u2', 'Revenue Officer', 'rev@sccp.ng', '08000000002', 'revenue_officer', 'hash123']
+      args: ['u2', 'Revenue Officer', 'rev@urpb.ng', '08000000002', 'revenue_officer', 'hash123']
     });
     await db.execute({
       sql: 'INSERT INTO users VALUES (?, ?, ?, ?, ?, ?)',
-      args: ['u3', 'Field Inspector 1', 'insp1@sccp.ng', '08000000003', 'inspector', 'hash123']
+      args: ['u3', 'Field Inspector 1', 'insp1@urpb.ng', '08000000003', 'inspector', 'hash123']
     });
 
     const now = new Date().toISOString();

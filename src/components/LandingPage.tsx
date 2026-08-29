@@ -41,7 +41,7 @@ export function LandingPage({ onLoginClick }: { onLoginClick: () => void }) {
               <img src="https://bpp.kt.gov.ng/wp-content/uploads/2022/10/cropped-kts-logo-e1666441403264.jpg" alt="Katsina State Logo" className="w-full h-full object-contain p-1" />
             </div>
             <div>
-              <h1 className="text-2xl font-black tracking-tight text-slate-900 leading-none">SCCP</h1>
+              <h1 className="text-2xl font-black tracking-tight text-slate-900 leading-none">URPB</h1>
               <p className="text-xs uppercase tracking-widest text-emerald-700 font-bold mt-1">Katsina State URPB</p>
             </div>
           </div>
@@ -107,7 +107,7 @@ export function LandingPage({ onLoginClick }: { onLoginClick: () => void }) {
               </h2>
               
               <p className="text-xl text-slate-600 max-w-lg leading-relaxed font-medium">
-                The Signage and Construction Compliance Platform (SCCP) monitors and regulates urban structures across Katsina State through geospatial tracking and public collaboration.
+                The Urban Regulation & Planning Board (URPB) monitors and regulates urban structures across Katsina State through geospatial tracking and public collaboration.
               </p>
 
               <div className="flex gap-4 pt-4">
@@ -499,7 +499,7 @@ export function LandingPage({ onLoginClick }: { onLoginClick: () => void }) {
                 a: "All outdoor advertising structures (Unipoles, Gantries, LED displays, Rooftop signs, Static boards) and physical construction developments (Commercial, Industrial, and Residential projects above single story) require registered permits from the Katsina State URPB."
               },
               {
-                q: "How does the SCCP calculate advertising licensing fees?",
+                q: "How does the URPB calculate advertising licensing fees?",
                 a: "Annual fees are calculated based on structure type, square meter surface area, illumination class (LED vs. Static), and municipal zoning tier (Metropolitan arterial vs. inter-state corridor). All payments must be remitted directly to the State IGR Single Treasury Account."
               },
               {
@@ -539,7 +539,7 @@ export function LandingPage({ onLoginClick }: { onLoginClick: () => void }) {
                 <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center overflow-hidden border border-slate-100 p-0.5">
                   <img src="https://bpp.kt.gov.ng/wp-content/uploads/2022/10/cropped-kts-logo-e1666441403264.jpg" alt="Logo" className="w-full h-full object-contain" />
                 </div>
-                <span className="font-black text-slate-900 text-lg">SCCP</span>
+                <span className="font-black text-slate-900 text-lg">URPB</span>
               </div>
               <p className="text-xs text-slate-500 leading-relaxed">Signage & Construction Compliance Platform. Powered by Katsina State URPB.</p>
             </div>

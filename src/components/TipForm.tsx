@@ -76,9 +76,9 @@ export function TipForm({ onTipSubmitted }: { onTipSubmitted?: () => void }) {
 
     // Always persist to localStorage so dashboard can display it
     try {
-      const stored = JSON.parse(localStorage.getItem('sccp_citizen_tips') || '[]');
+      const stored = JSON.parse(localStorage.getItem('urpb_citizen_tips') || '[]');
       stored.push(newTip);
-      localStorage.setItem('sccp_citizen_tips', JSON.stringify(stored));
+      localStorage.setItem('urpb_citizen_tips', JSON.stringify(stored));
     } catch (e) {
       console.error('Failed to save tip locally', e);
     }

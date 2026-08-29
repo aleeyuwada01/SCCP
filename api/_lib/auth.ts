@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'sccp-super-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET || 'urpb-super-secret-key';
 
 export interface AuthUser {
   id: string;

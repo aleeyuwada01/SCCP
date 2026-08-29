@@ -5,7 +5,7 @@ import path from 'path';
 import { createServer as createViteServer } from 'vite';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'sccp-super-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET || 'urpb-super-secret-key';
 
 // Mock Express Request with user
 declare global {

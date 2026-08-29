@@ -13,7 +13,7 @@ export function getDb(): Client {
       _db = createClient({ url, authToken });
     } else {
       // Fallback: local SQLite file (for local dev / demo)
-      _db = createClient({ url: 'file:sccp.db' });
+      _db = createClient({ url: 'file:urpb.db' });
     }
   }
   return _db;
@@ -160,15 +160,15 @@ async function seedDb(db: Client) {
   if (count === 0) {
     await db.execute({
       sql: 'INSERT INTO users VALUES (?, ?, ?, ?, ?, ?)',
-      args: ['u1', 'Admin Supervisor', 'admin@sccp.ng', '08000000001', 'supervisor', 'hash123']
+      args: ['u1', 'Admin Supervisor', 'admin@urpb.ng', '08000000001', 'supervisor', 'hash123']
     });
     await db.execute({
       sql: 'INSERT INTO users VALUES (?, ?, ?, ?, ?, ?)',
-      args: ['u2', 'Revenue Officer', 'rev@sccp.ng', '08000000002', 'revenue_officer', 'hash123']
+      args: ['u2', 'Revenue Officer', 'rev@urpb.ng', '08000000002', 'revenue_officer', 'hash123']
     });
     await db.execute({
       sql: 'INSERT INTO users VALUES (?, ?, ?, ?, ?, ?)',
-      args: ['u3', 'Field Inspector 1', 'insp1@sccp.ng', '08000000003', 'inspector', 'hash123']
+      args: ['u3', 'Field Inspector 1', 'insp1@urpb.ng', '08000000003', 'inspector', 'hash123']
     });
 
     const now = new Date().toISOString();
