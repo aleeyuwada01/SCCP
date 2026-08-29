@@ -73,6 +73,7 @@ export default function App() {
   const [showSignageLayer, setShowSignageLayer] = useState(true);
   const [showConstructionLayer, setShowConstructionLayer] = useState(true);
   const [showTipsLayer, setShowTipsLayer] = useState(true);
+  const [showStreetNames, setShowStreetNames] = useState(true);
 
   // Registry state
   const [registrySearch, setRegistrySearch] = useState('');
@@ -630,39 +631,70 @@ export default function App() {
               >
                 <NavigationControl position="bottom-left" showCompass visualizePitch />
                 
-                {/* Signage Layer */}
+                {/* Signage Layer — billboard signpost icons */}
                 {showSignageLayer && billboards.map(b => (
-                  <MapMarker key={`b-${b.id}`} longitude={b.lng} latitude={b.lat} anchor="center">
-                    <div 
+                  <MapMarker key={`b-${b.id}`} longitude={b.lng} latitude={b.lat} anchor="bottom">
+                    <div
                       onClick={(e) => { e.stopPropagation(); markerClickedRef.current = true; setSelectedMarker({type: 'billboard', data: b}); }}
-                      style={{ backgroundColor: getBillboardColor(b.status), width: 14, height: 14, borderRadius: '50%', border: '2px solid white', boxShadow: '0 0 6px rgba(0,0,0,0.35)', cursor: 'pointer', transition: 'transform 0.15s' }}
-                      onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.5)')}
-                      onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
-                    />
+                      className={`map-marker ${selectedMarker?.type === 'billboard' && selectedMarker?.data?.id === b.id ? 'selected' : ''}`}
+                      style={{ position: 'relative' }}
+                    >
+                      <svg width="30" height="42" viewBox="0 0 30 42" style={{ filter: 'drop-shadow(0 3px 4px rgba(0,0,0,0.5))' }}>
+                        <ellipse cx="15" cy="40" rx="6" ry="2" fill="rgba(0,0,0,0.25)"/>
+                        <rect x="13" y="20" width="4" height="20" fill="#6b7280" rx="1.5"/>
+                        <rect x="1" y="1" width="28" height="19" rx="3" fill={getBillboardColor(b.status)} stroke="white" strokeWidth="2"/>
+                        <rect x="5" y="6" width="20" height="2.5" rx="1" fill="rgba(255,255,255,0.5)"/>
+                        <rect x="5" y="11" width="14" height="2.5" rx="1" fill="rgba(255,255,255,0.3)"/>
+                      </svg>
+                      {selectedMarker?.type === 'billboard' && selectedMarker?.data?.id === b.id && (
+                        <span className="marker-pulse-ring" style={{ color: getBillboardColor(b.status), top: '2px', left: '2px', right: '2px', bottom: '22px', borderRadius: '4px' }} />
+                      )}
+                    </div>
                   </MapMarker>
                 ))}
 
-                {/* Construction Layer */}
+                {/* Construction Layer — building icons */}
                 {showConstructionLayer && cases.map(c => (
-                  <MapMarker key={`c-${c.id}`} longitude={c.lng} latitude={c.lat} anchor="center">
-                    <div 
+                  <MapMarker key={`c-${c.id}`} longitude={c.lng} latitude={c.lat} anchor="bottom">
+                    <div
                       onClick={(e) => { e.stopPropagation(); markerClickedRef.current = true; setSelectedMarker({type: 'case', data: c}); }}
-                      style={{ backgroundColor: getCaseMarkerColor(c.status), width: 14, height: 14, borderRadius: '50%', border: '2px solid white', boxShadow: '0 0 6px rgba(0,0,0,0.35)', cursor: 'pointer', transition: 'transform 0.15s' }}
-                      onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.5)')}
-                      onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
-                    />
+                      className={`map-marker ${selectedMarker?.type === 'case' && selectedMarker?.data?.id === c.id ? 'selected' : ''}`}
+                      style={{ position: 'relative' }}
+                    >
+                      <svg width="26" height="38" viewBox="0 0 26 38" style={{ filter: 'drop-shadow(0 3px 4px rgba(0,0,0,0.5))' }}>
+                        <ellipse cx="13" cy="36" rx="6" ry="2" fill="rgba(0,0,0,0.25)"/>
+                        <path d="M3 14 L13 4 L23 14 L23 35 L3 35 Z" fill={getCaseMarkerColor(c.status)} stroke="white" strokeWidth="2" strokeLinejoin="round"/>
+                        <rect x="7" y="17" width="4" height="4" rx="0.5" fill="rgba(255,255,255,0.5)"/>
+                        <rect x="15" y="17" width="4" height="4" rx="0.5" fill="rgba(255,255,255,0.5)"/>
+                        <rect x="7" y="24" width="4" height="4" rx="0.5" fill="rgba(255,255,255,0.5)"/>
+                        <rect x="15" y="24" width="4" height="4" rx="0.5" fill="rgba(255,255,255,0.5)"/>
+                        <rect x="10" y="30" width="6" height="5" rx="1" fill="rgba(255,255,255,0.35)"/>
+                      </svg>
+                      {selectedMarker?.type === 'case' && selectedMarker?.data?.id === c.id && (
+                        <span className="marker-pulse-ring" style={{ color: getCaseMarkerColor(c.status), top: '4px', left: '2px', right: '2px', bottom: '4px', borderRadius: '4px' }} />
+                      )}
+                    </div>
                   </MapMarker>
                 ))}
 
-                {/* Tips Layer */}
+                {/* Tips Layer — speech bubble icons */}
                 {showTipsLayer && tips.filter(t => t.status === 'New').map(t => (
-                  <MapMarker key={`t-${t.id}`} longitude={t.lng} latitude={t.lat} anchor="center">
-                    <div 
+                  <MapMarker key={`t-${t.id}`} longitude={t.lng} latitude={t.lat} anchor="bottom">
+                    <div
                       onClick={(e) => { e.stopPropagation(); markerClickedRef.current = true; setSelectedMarker({type: 'tip', data: t}); }}
-                      style={{ backgroundColor: '#8b5cf6', width: 14, height: 14, borderRadius: '50%', border: '2px solid white', boxShadow: '0 0 6px rgba(0,0,0,0.35)', cursor: 'pointer', transition: 'transform 0.15s' }}
-                      onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.5)')}
-                      onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
-                    />
+                      className={`map-marker ${selectedMarker?.type === 'tip' && selectedMarker?.data?.id === t.id ? 'selected' : ''}`}
+                      style={{ position: 'relative' }}
+                    >
+                      <svg width="28" height="36" viewBox="0 0 28 36" style={{ filter: 'drop-shadow(0 3px 4px rgba(0,0,0,0.5))' }}>
+                        <ellipse cx="14" cy="34" rx="5" ry="2" fill="rgba(0,0,0,0.25)"/>
+                        <path d="M2 2 Q2 1 3 1 L25 1 Q26 1 26 2 L26 20 Q26 21 25 21 L17 21 L14 28 L11 21 L3 21 Q2 21 2 20 Z" fill="#8b5cf6" stroke="white" strokeWidth="1.5"/>
+                        <rect x="11" y="5" width="6" height="2.5" rx="1.2" fill="rgba(255,255,255,0.8)"/>
+                        <text x="14" y="18" textAnchor="middle" fill="rgba(255,255,255,0.9)" fontSize="12" fontWeight="bold">!</text>
+                      </svg>
+                      {selectedMarker?.type === 'tip' && selectedMarker?.data?.id === t.id && (
+                        <span className="marker-pulse-ring" style={{ color: '#8b5cf6', top: '0', left: '2px', right: '2px', bottom: '14px', borderRadius: '4px' }} />
+                      )}
+                    </div>
                   </MapMarker>
                 ))}
 
@@ -746,6 +778,22 @@ export default function App() {
                   <span className="flex items-center gap-2"><span className="w-3 h-3 rounded-sm bg-violet-600"></span> Public Tips</span>
                   <button onClick={() => setShowTipsLayer(!showTipsLayer)} className={`p-1 rounded transition-colors ${showTipsLayer ? 'text-violet-600' : 'text-slate-300'}`}>
                     {showTipsLayer ? <Eye size={14} /> : <EyeOff size={14} />}
+                  </button>
+                </label>
+                <label className="flex items-center justify-between cursor-pointer group border-t border-slate-100 pt-2.5">
+                  <span className="flex items-center gap-2"><span className="w-3 h-3 rounded-sm bg-slate-500"></span> Street Names</span>
+                  <button onClick={() => {
+                    const map = mapRef.current?.getMap?.() ?? mapRef.current;
+                    if (!map) return;
+                    const style = map.getStyle();
+                    style?.layers?.forEach((layer: any) => {
+                      if (layer.type === 'symbol' && layer.layout?.['text-field']) {
+                        map.setLayoutProperty(layer.id, 'visibility', showStreetNames ? 'none' : 'visible');
+                      }
+                    });
+                    setShowStreetNames(!showStreetNames);
+                  }} className={`p-1 rounded transition-colors ${showStreetNames ? 'text-slate-600' : 'text-slate-300'}`}>
+                    {showStreetNames ? <Eye size={14} /> : <EyeOff size={14} />}
                   </button>
                 </label>
                 <div className="border-t border-slate-100 pt-2.5 space-y-2 text-[10px] text-slate-500">
