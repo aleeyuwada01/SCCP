@@ -10,7 +10,7 @@ import { AddCaseModal } from './components/AddCaseModal';
 
 // Mapbox 3D Map
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || '';
-const MAP_STYLE = 'mapbox://styles/mapbox/streets-v12';
+const MAP_STYLE = 'mapbox://styles/mapbox/satellite-streets-v12';
 
 // Helper: parse tip category from description prefix like "[Category] text"
 function parseTipCategory(description: string): { category: string; text: string } {
@@ -64,9 +64,10 @@ export default function App() {
     longitude: 7.604,
     latitude: 12.989,
     zoom: 12,
-    pitch: 50,
+    pitch: 60,
     bearing: -17
   });
+  const markerClickedRef = useRef(false);
   const [selectedMarker, setSelectedMarker] = useState<{type: string; data: any} | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSignageLayer, setShowSignageLayer] = useState(true);
@@ -585,11 +586,17 @@ export default function App() {
                 ref={mapRef}
                 {...viewState}
                 onMove={evt => setViewState(evt.viewState)}
-                onClick={() => setSelectedMarker(null)}
+                onClick={() => {
+                  if (markerClickedRef.current) {
+                    markerClickedRef.current = false;
+                    return;
+                  }
+                  setSelectedMarker(null);
+                }}
                 style={{ width: '100%', height: '100%' }}
                 mapStyle={MAP_STYLE}
                 mapboxAccessToken={MAPBOX_TOKEN}
-                terrain={{ source: 'mapbox-dem', exaggeration: 1.2 }}
+                terrain={{ source: 'mapbox-dem', exaggeration: 1.5 }}
                 onLoad={(evt) => {
                   const map = evt.target;
                   if (!map.getSource('mapbox-dem')) {
@@ -600,6 +607,25 @@ export default function App() {
                       maxzoom: 14
                     });
                   }
+                  // Add 3D buildings
+                  const layers = map.getStyle().layers;
+                  const labelLayerId = layers?.find((l: any) => l.type === 'symbol' && l.layout?.['text-field'])?.id;
+                  if (!map.getLayer('3d-buildings')) {
+                    map.addLayer({
+                      id: '3d-buildings',
+                      source: 'composite',
+                      'source-layer': 'building',
+                      filter: ['==', 'extrude', 'true'],
+                      type: 'fill-extrusion',
+                      minzoom: 14,
+                      paint: {
+                        'fill-extrusion-color': '#aaa',
+                        'fill-extrusion-height': ['interpolate', ['linear'], ['zoom'], 14, 0, 14.5, ['get', 'height']],
+                        'fill-extrusion-base': ['interpolate', ['linear'], ['zoom'], 14, 0, 14.5, ['get', 'min_height']],
+                        'fill-extrusion-opacity': 0.7
+                      }
+                    }, labelLayerId);
+                  }
                 }}
               >
                 <NavigationControl position="bottom-left" showCompass visualizePitch />
@@ -608,7 +634,7 @@ export default function App() {
                 {showSignageLayer && billboards.map(b => (
                   <MapMarker key={`b-${b.id}`} longitude={b.lng} latitude={b.lat} anchor="center">
                     <div 
-                      onClick={(e) => { e.stopPropagation(); setSelectedMarker({type: 'billboard', data: b}); }}
+                      onClick={(e) => { e.stopPropagation(); markerClickedRef.current = true; setSelectedMarker({type: 'billboard', data: b}); }}
                       style={{ backgroundColor: getBillboardColor(b.status), width: 14, height: 14, borderRadius: '50%', border: '2px solid white', boxShadow: '0 0 6px rgba(0,0,0,0.35)', cursor: 'pointer', transition: 'transform 0.15s' }}
                       onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.5)')}
                       onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
@@ -620,7 +646,7 @@ export default function App() {
                 {showConstructionLayer && cases.map(c => (
                   <MapMarker key={`c-${c.id}`} longitude={c.lng} latitude={c.lat} anchor="center">
                     <div 
-                      onClick={(e) => { e.stopPropagation(); setSelectedMarker({type: 'case', data: c}); }}
+                      onClick={(e) => { e.stopPropagation(); markerClickedRef.current = true; setSelectedMarker({type: 'case', data: c}); }}
                       style={{ backgroundColor: getCaseMarkerColor(c.status), width: 14, height: 14, borderRadius: '50%', border: '2px solid white', boxShadow: '0 0 6px rgba(0,0,0,0.35)', cursor: 'pointer', transition: 'transform 0.15s' }}
                       onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.5)')}
                       onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
@@ -632,7 +658,7 @@ export default function App() {
                 {showTipsLayer && tips.filter(t => t.status === 'New').map(t => (
                   <MapMarker key={`t-${t.id}`} longitude={t.lng} latitude={t.lat} anchor="center">
                     <div 
-                      onClick={(e) => { e.stopPropagation(); setSelectedMarker({type: 'tip', data: t}); }}
+                      onClick={(e) => { e.stopPropagation(); markerClickedRef.current = true; setSelectedMarker({type: 'tip', data: t}); }}
                       style={{ backgroundColor: '#8b5cf6', width: 14, height: 14, borderRadius: '50%', border: '2px solid white', boxShadow: '0 0 6px rgba(0,0,0,0.35)', cursor: 'pointer', transition: 'transform 0.15s' }}
                       onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.5)')}
                       onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
