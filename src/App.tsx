@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import MapGL, { Marker as MapMarker, Popup as MapPopup, NavigationControl } from 'react-map-gl/maplibre';
-import 'maplibre-gl/dist/maplibre-gl.css';
+import MapGL, { Marker as MapMarker, Popup as MapPopup, NavigationControl } from 'react-map-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Legend } from 'recharts';
 import { MapPin, LayoutDashboard, FileText, AlertTriangle, MessageSquare, Menu, LogOut, ChevronLeft, Search, ChevronDown, ChevronUp, Eye, EyeOff, Filter, Download, Clock, TrendingUp, Shield, Users, X as XIcon } from 'lucide-react';
 import { TipForm } from './components/TipForm';
@@ -8,8 +8,9 @@ import { LandingPage } from './components/LandingPage';
 import { AddBillboardModal } from './components/AddBillboardModal';
 import { AddCaseModal } from './components/AddCaseModal';
 
-// 3D Map style
-const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
+// Mapbox 3D Map
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || '';
+const MAP_STYLE = 'mapbox://styles/mapbox/streets-v12';
 
 // Helper: parse tip category from description prefix like "[Category] text"
 function parseTipCategory(description: string): { category: string; text: string } {
@@ -587,6 +588,19 @@ export default function App() {
                 onClick={() => setSelectedMarker(null)}
                 style={{ width: '100%', height: '100%' }}
                 mapStyle={MAP_STYLE}
+                mapboxAccessToken={MAPBOX_TOKEN}
+                terrain={{ source: 'mapbox-dem', exaggeration: 1.2 }}
+                onLoad={(evt) => {
+                  const map = evt.target;
+                  if (!map.getSource('mapbox-dem')) {
+                    map.addSource('mapbox-dem', {
+                      type: 'raster-dem',
+                      url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
+                      tileSize: 512,
+                      maxzoom: 14
+                    });
+                  }
+                }}
               >
                 <NavigationControl position="bottom-left" showCompass visualizePitch />
                 
