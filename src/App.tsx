@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap, ZoomControl } from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import MapGL, { Marker as MapMarker, Popup as MapPopup, NavigationControl } from 'react-map-gl/maplibre';
+import 'maplibre-gl/dist/maplibre-gl.css';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Legend } from 'recharts';
 import { MapPin, LayoutDashboard, FileText, AlertTriangle, MessageSquare, Menu, LogOut, ChevronLeft, Search, ChevronDown, ChevronUp, Eye, EyeOff, Filter, Download, Clock, TrendingUp, Shield, Users, X as XIcon } from 'lucide-react';
 import { TipForm } from './components/TipForm';
@@ -9,30 +8,8 @@ import { LandingPage } from './components/LandingPage';
 import { AddBillboardModal } from './components/AddBillboardModal';
 import { AddCaseModal } from './components/AddCaseModal';
 
-// Fix for default marker icon in react-leaflet
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-});
-
-const getMarkerIcon = (color: string) => {
-  return L.divIcon({
-    className: 'custom-icon',
-    html: `<div style="background-color: ${color}; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 4px rgba(0,0,0,0.4);"></div>`,
-    iconSize: [14, 14],
-    iconAnchor: [7, 7]
-  });
-};
-
-function MapUpdater({ center, zoom }: { center: [number, number], zoom: number }) {
-  const map = useMap();
-  useEffect(() => {
-    map.flyTo(center, zoom, { duration: 1.5 });
-  }, [center, zoom, map]);
-  return null;
-}
+// 3D Map style
+const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
 
 // Helper: parse tip category from description prefix like "[Category] text"
 function parseTipCategory(description: string): { category: string; text: string } {
@@ -80,9 +57,16 @@ export default function App() {
   const [showAddCase, setShowAddCase] = useState(false);
   const [loginLoading, setLoginLoading] = useState<string | null>(null);
 
-  // Map state
-  const [mapCenter, setMapCenter] = useState<[number, number]>([12.989, 7.604]);
-  const [mapZoom, setMapZoom] = useState(12);
+  // Map state (3D perspective)
+  const mapRef = useRef<any>(null);
+  const [viewState, setViewState] = useState({
+    longitude: 7.604,
+    latitude: 12.989,
+    zoom: 12,
+    pitch: 50,
+    bearing: -17
+  });
+  const [selectedMarker, setSelectedMarker] = useState<{type: string; data: any} | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSignageLayer, setShowSignageLayer] = useState(true);
   const [showConstructionLayer, setShowConstructionLayer] = useState(true);
@@ -115,8 +99,7 @@ export default function App() {
     if (allMatches.length > 0) {
       const avgLat = allMatches.reduce((sum, item) => sum + item.lat, 0) / allMatches.length;
       const avgLng = allMatches.reduce((sum, item) => sum + item.lng, 0) / allMatches.length;
-      setMapCenter([avgLat, avgLng]);
-      setMapZoom(14);
+      mapRef.current?.flyTo({ center: [avgLng, avgLat], zoom: 14, duration: 1500 });
     } else {
       alert("No locations found matching that LGA or Road Name.");
     }
@@ -296,10 +279,23 @@ export default function App() {
     setShowLogin(false);
   };
 
+  // Signage: green family
   const getBillboardColor = (status: string) => {
-    if (status.startsWith('Approved-Paid')) return '#10b981';
-    if (status.includes('Due')) return '#f59e0b';
-    return '#ef4444';
+    if (status.startsWith('Approved-Paid')) return '#10b981'; // emerald-500
+    if (status.includes('Due')) return '#6ee7b7'; // emerald-300 (lighter)
+    return '#065f46'; // emerald-900 (darker)
+  };
+
+  // Construction: orange family
+  const getCaseMarkerColor = (status: string) => {
+    switch (status) {
+      case 'Flagged': return '#ea580c'; // orange-600
+      case 'Under Review': return '#fb923c'; // orange-400
+      case 'Stop Work Order': return '#9a3412'; // orange-800
+      case 'Resolved': return '#fdba74'; // orange-300
+      case 'Approved': return '#fed7aa'; // orange-200
+      default: return '#f97316';
+    }
   };
 
   const handleConvertTip = async (id: string, type: string) => {
@@ -577,26 +573,68 @@ export default function App() {
           {activeTab === 'map' && (
             <div className="flex-grow rounded-2xl overflow-hidden border border-slate-200 shadow-sm relative z-0 h-full min-h-[500px]">
               {/* Search */}
-              <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[400] w-full max-w-sm pointer-events-auto px-4">
+              <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[10] w-full max-w-sm pointer-events-auto px-4">
                 <form onSubmit={handleMapSearch} className="relative shadow-lg rounded-xl overflow-hidden bg-white/95 backdrop-blur border border-slate-200">
                   <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search LGA or Road Name..." className="w-full pl-11 pr-4 py-3 bg-transparent text-sm font-semibold text-slate-900 focus:outline-none placeholder:text-slate-400 placeholder:font-medium" />
                   <div className="absolute left-3 top-0 bottom-0 flex items-center justify-center text-slate-400"><Search size={18} /></div>
                 </form>
               </div>
 
-              <MapContainer center={mapCenter} zoom={mapZoom} zoomControl={false} className="h-full w-full z-0">
-                <MapUpdater center={mapCenter} zoom={mapZoom} />
-                <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                <ZoomControl position="bottomleft" />
+              <MapGL
+                ref={mapRef}
+                {...viewState}
+                onMove={evt => setViewState(evt.viewState)}
+                onClick={() => setSelectedMarker(null)}
+                style={{ width: '100%', height: '100%' }}
+                mapStyle={MAP_STYLE}
+              >
+                <NavigationControl position="bottom-left" showCompass visualizePitch />
                 
                 {/* Signage Layer */}
                 {showSignageLayer && billboards.map(b => (
-                  <Marker key={b.id} position={[b.lat, b.lng]} icon={getMarkerIcon(getBillboardColor(b.status))}>
-                    <Popup>
+                  <MapMarker key={`b-${b.id}`} longitude={b.lng} latitude={b.lat} anchor="center">
+                    <div 
+                      onClick={(e) => { e.stopPropagation(); setSelectedMarker({type: 'billboard', data: b}); }}
+                      style={{ backgroundColor: getBillboardColor(b.status), width: 14, height: 14, borderRadius: '50%', border: '2px solid white', boxShadow: '0 0 6px rgba(0,0,0,0.35)', cursor: 'pointer', transition: 'transform 0.15s' }}
+                      onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.5)')}
+                      onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
+                    />
+                  </MapMarker>
+                ))}
+
+                {/* Construction Layer */}
+                {showConstructionLayer && cases.map(c => (
+                  <MapMarker key={`c-${c.id}`} longitude={c.lng} latitude={c.lat} anchor="center">
+                    <div 
+                      onClick={(e) => { e.stopPropagation(); setSelectedMarker({type: 'case', data: c}); }}
+                      style={{ backgroundColor: getCaseMarkerColor(c.status), width: 14, height: 14, borderRadius: '50%', border: '2px solid white', boxShadow: '0 0 6px rgba(0,0,0,0.35)', cursor: 'pointer', transition: 'transform 0.15s' }}
+                      onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.5)')}
+                      onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
+                    />
+                  </MapMarker>
+                ))}
+
+                {/* Tips Layer */}
+                {showTipsLayer && tips.filter(t => t.status === 'New').map(t => (
+                  <MapMarker key={`t-${t.id}`} longitude={t.lng} latitude={t.lat} anchor="center">
+                    <div 
+                      onClick={(e) => { e.stopPropagation(); setSelectedMarker({type: 'tip', data: t}); }}
+                      style={{ backgroundColor: '#8b5cf6', width: 14, height: 14, borderRadius: '50%', border: '2px solid white', boxShadow: '0 0 6px rgba(0,0,0,0.35)', cursor: 'pointer', transition: 'transform 0.15s' }}
+                      onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.5)')}
+                      onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
+                    />
+                  </MapMarker>
+                ))}
+
+                {/* Billboard Popup */}
+                {selectedMarker?.type === 'billboard' && (() => {
+                  const b = selectedMarker.data;
+                  return (
+                    <MapPopup longitude={b.lng} latitude={b.lat} onClose={() => setSelectedMarker(null)} closeOnClick={false} anchor="bottom" maxWidth="280px">
                       <div className="p-2 min-w-[220px]">
                         <div className="flex items-center justify-between mb-2">
                           <span className="font-extrabold text-slate-900">{b.owner_name}</span>
-                          <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${b.status.startsWith('Approved-Paid') ? 'bg-emerald-100 text-emerald-700' : b.status.includes('Due') ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700'}`}>{b.status}</span>
+                          <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${b.status.startsWith('Approved-Paid') ? 'bg-emerald-100 text-emerald-700' : b.status.includes('Due') ? 'bg-emerald-50 text-emerald-500' : 'bg-emerald-900/10 text-emerald-900'}`}>{b.status}</span>
                         </div>
                         <div className="space-y-1 text-xs text-slate-600">
                           <p><strong>Type:</strong> {b.structure_type} ({b.dimensions})</p>
@@ -608,14 +646,15 @@ export default function App() {
                         </div>
                         <button onClick={() => { setActiveTab('registry'); setExpandedBillboard(b.id); }} className="mt-2 text-[10px] font-bold text-emerald-600 hover:text-emerald-700">→ View in Registry</button>
                       </div>
-                    </Popup>
-                  </Marker>
-                ))}
+                    </MapPopup>
+                  );
+                })()}
 
-                {/* Construction Layer */}
-                {showConstructionLayer && cases.map(c => (
-                  <Marker key={c.id} position={[c.lat, c.lng]} icon={getMarkerIcon('#f97316')}>
-                    <Popup>
+                {/* Case Popup */}
+                {selectedMarker?.type === 'case' && (() => {
+                  const c = selectedMarker.data;
+                  return (
+                    <MapPopup longitude={c.lng} latitude={c.lat} onClose={() => setSelectedMarker(null)} closeOnClick={false} anchor="bottom" maxWidth="260px">
                       <div className="p-2 min-w-[200px]">
                         <div className="flex items-center justify-between mb-2">
                           <span className="font-extrabold text-slate-900">Construction Flag</span>
@@ -629,26 +668,27 @@ export default function App() {
                         </div>
                         <button onClick={() => { setActiveTab('cases'); setExpandedCase(c.id); }} className="mt-2 text-[10px] font-bold text-orange-600 hover:text-orange-700">→ View Case</button>
                       </div>
-                    </Popup>
-                  </Marker>
-                ))}
+                    </MapPopup>
+                  );
+                })()}
 
-                {/* Tips Layer */}
-                {showTipsLayer && tips.filter(t => t.status === 'New').map(t => (
-                  <Marker key={t.id} position={[t.lat, t.lng]} icon={getMarkerIcon('#8b5cf6')}>
-                    <Popup>
+                {/* Tip Popup */}
+                {selectedMarker?.type === 'tip' && (() => {
+                  const t = selectedMarker.data;
+                  return (
+                    <MapPopup longitude={t.lng} latitude={t.lat} onClose={() => setSelectedMarker(null)} closeOnClick={false} anchor="bottom" maxWidth="260px">
                       <div className="p-2 min-w-[200px]">
                         <span className="font-extrabold text-slate-900 block mb-1">Public Tip</span>
                         <p className="text-xs text-slate-600 italic">"{parseTipCategory(t.description).text.substring(0, 80)}..."</p>
                         <p className="text-[10px] text-slate-400 mt-1">Category: {parseTipCategory(t.description).category}</p>
                       </div>
-                    </Popup>
-                  </Marker>
-                ))}
-              </MapContainer>
+                    </MapPopup>
+                  );
+                })()}
+              </MapGL>
 
               {/* Layer Toggle Panel */}
-              <div className="absolute top-4 right-4 bg-white/95 backdrop-blur p-4 rounded-xl shadow-lg border border-slate-200 text-xs font-semibold z-[400] space-y-3 pointer-events-auto w-56">
+              <div className="absolute top-4 right-4 bg-white/95 backdrop-blur p-4 rounded-xl shadow-lg border border-slate-200 text-xs font-semibold z-[10] space-y-3 pointer-events-auto w-56">
                 <div className="text-[10px] text-slate-400 uppercase tracking-widest font-bold mb-1">Map Layers</div>
                 <label className="flex items-center justify-between cursor-pointer group">
                   <span className="flex items-center gap-2"><span className="w-3 h-3 rounded-sm bg-emerald-600"></span> Signage</span>
@@ -670,14 +710,20 @@ export default function App() {
                 </label>
                 <div className="border-t border-slate-100 pt-2.5 space-y-2 text-[10px] text-slate-500">
                   <div className="text-[9px] text-slate-400 uppercase tracking-widest font-bold">Signage Status</div>
-                  <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500"></span> Compliant (Paid)</div>
-                  <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-400"></span> Payment Due</div>
-                  <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-rose-500"></span> Unregistered</div>
+                  <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full" style={{backgroundColor:'#10b981'}}></span> Compliant (Paid)</div>
+                  <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full" style={{backgroundColor:'#6ee7b7'}}></span> Payment Due</div>
+                  <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full" style={{backgroundColor:'#065f46'}}></span> Unregistered</div>
+                </div>
+                <div className="border-t border-slate-100 pt-2.5 space-y-2 text-[10px] text-slate-500">
+                  <div className="text-[9px] text-slate-400 uppercase tracking-widest font-bold">Construction Status</div>
+                  <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full" style={{backgroundColor:'#ea580c'}}></span> Flagged</div>
+                  <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full" style={{backgroundColor:'#fb923c'}}></span> Under Review</div>
+                  <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full" style={{backgroundColor:'#9a3412'}}></span> Stop Work Order</div>
                 </div>
               </div>
 
               {(currentUser?.role === 'supervisor' || currentUser?.role === 'inspector') && (
-                <div className="absolute bottom-6 right-6 z-[400] flex flex-col gap-3 pointer-events-auto">
+                <div className="absolute bottom-6 right-6 z-[10] flex flex-col gap-3 pointer-events-auto">
                   <button onClick={() => setShowAddBillboard(true)} className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-full shadow-xl font-bold text-sm transition-all hover:scale-105">+ Register Signage</button>
                   <button onClick={() => setShowAddCase(true)} className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-3 rounded-full shadow-xl font-bold text-sm transition-all hover:scale-105">+ Flag Construction</button>
                 </div>
@@ -791,7 +837,7 @@ export default function App() {
                                   <div><span className="text-slate-400 block font-bold uppercase text-[10px] mb-1">Created</span><span className="text-slate-700 font-medium">{new Date(b.created_at).toLocaleDateString()}</span></div>
                                   <div>
                                     <span className="text-slate-400 block font-bold uppercase text-[10px] mb-1">Map</span>
-                                    <button onClick={() => { setActiveTab('map'); setMapCenter([b.lat, b.lng]); setMapZoom(16); }} className="text-emerald-600 font-bold hover:text-emerald-700 text-xs">View on Map →</button>
+                                    <button onClick={() => { setActiveTab('map'); setTimeout(() => mapRef.current?.flyTo({ center: [b.lng, b.lat], zoom: 16, duration: 1500 }), 100); }} className="text-emerald-600 font-bold hover:text-emerald-700 text-xs">View on Map →</button>
                                   </div>
                                 </div>
                               </td>
@@ -1008,7 +1054,7 @@ export default function App() {
                                     <div className="space-y-3">
                                       <div><span className="text-slate-400 block font-bold uppercase text-[10px] mb-1">GPS Coordinates</span><span className="text-slate-700 font-medium">{t.lat.toFixed(4)}°N, {t.lng.toFixed(4)}°E</span></div>
                                       <div><span className="text-slate-400 block font-bold uppercase text-[10px] mb-1">Submitted</span><span className="text-slate-700 font-medium">{new Date(t.created_at).toLocaleString()}</span></div>
-                                      <button onClick={() => { setActiveTab('map'); setMapCenter([t.lat, t.lng]); setMapZoom(16); }} className="text-emerald-600 font-bold hover:text-emerald-700 text-xs">View on Map →</button>
+                                      <button onClick={() => { setActiveTab('map'); setTimeout(() => mapRef.current?.flyTo({ center: [t.lng, t.lat], zoom: 16, duration: 1500 }), 100); }} className="text-emerald-600 font-bold hover:text-emerald-700 text-xs">View on Map →</button>
                                     </div>
                                   </div>
                                 </td>
