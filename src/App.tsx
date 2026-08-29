@@ -68,12 +68,40 @@ export default function App() {
     bearing: -17
   });
   const markerClickedRef = useRef(false);
+  const prevViewRef = useRef<any>(null);
   const [selectedMarker, setSelectedMarker] = useState<{type: string; data: any} | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSignageLayer, setShowSignageLayer] = useState(true);
   const [showConstructionLayer, setShowConstructionLayer] = useState(true);
   const [showTipsLayer, setShowTipsLayer] = useState(true);
-  const [showStreetNames, setShowStreetNames] = useState(true);
+  const [showStreetNames, setShowStreetNames] = useState(false);
+
+  // Cinematic camera: fly to marker on click, fly back on deselect
+  const flyToMarker = (lng: number, lat: number) => {
+    prevViewRef.current = { ...viewState };
+    mapRef.current?.flyTo({
+      center: [lng, lat],
+      zoom: 17.5,
+      pitch: 72,
+      bearing: (viewState.bearing || 0) + 30,
+      duration: 2000,
+      essential: true
+    });
+  };
+  const handleDeselectMarker = () => {
+    setSelectedMarker(null);
+    if (prevViewRef.current) {
+      mapRef.current?.flyTo({
+        center: [prevViewRef.current.longitude, prevViewRef.current.latitude],
+        zoom: prevViewRef.current.zoom,
+        pitch: prevViewRef.current.pitch,
+        bearing: prevViewRef.current.bearing,
+        duration: 1500,
+        essential: true
+      });
+      prevViewRef.current = null;
+    }
+  };
 
   // Registry state
   const [registrySearch, setRegistrySearch] = useState('');
@@ -592,7 +620,7 @@ export default function App() {
                     markerClickedRef.current = false;
                     return;
                   }
-                  setSelectedMarker(null);
+                  handleDeselectMarker();
                 }}
                 style={{ width: '100%', height: '100%' }}
                 mapStyle={MAP_STYLE}
@@ -627,6 +655,12 @@ export default function App() {
                       }
                     }, labelLayerId);
                   }
+                  // Hide street names by default
+                  map.getStyle().layers?.forEach((layer: any) => {
+                    if (layer.type === 'symbol' && layer.layout?.['text-field']) {
+                      map.setLayoutProperty(layer.id, 'visibility', 'none');
+                    }
+                  });
                 }}
               >
                 <NavigationControl position="bottom-left" showCompass visualizePitch />
@@ -635,7 +669,7 @@ export default function App() {
                 {showSignageLayer && billboards.map(b => (
                   <MapMarker key={`b-${b.id}`} longitude={b.lng} latitude={b.lat} anchor="bottom">
                     <div
-                      onClick={(e) => { e.stopPropagation(); markerClickedRef.current = true; setSelectedMarker({type: 'billboard', data: b}); }}
+                      onClick={(e) => { e.stopPropagation(); markerClickedRef.current = true; setSelectedMarker({type: 'billboard', data: b}); flyToMarker(b.lng, b.lat); }}
                       className={`map-marker ${selectedMarker?.type === 'billboard' && selectedMarker?.data?.id === b.id ? 'selected' : ''}`}
                       style={{ position: 'relative' }}
                     >
@@ -657,7 +691,7 @@ export default function App() {
                 {showConstructionLayer && cases.map(c => (
                   <MapMarker key={`c-${c.id}`} longitude={c.lng} latitude={c.lat} anchor="bottom">
                     <div
-                      onClick={(e) => { e.stopPropagation(); markerClickedRef.current = true; setSelectedMarker({type: 'case', data: c}); }}
+                      onClick={(e) => { e.stopPropagation(); markerClickedRef.current = true; setSelectedMarker({type: 'case', data: c}); flyToMarker(c.lng, c.lat); }}
                       className={`map-marker ${selectedMarker?.type === 'case' && selectedMarker?.data?.id === c.id ? 'selected' : ''}`}
                       style={{ position: 'relative' }}
                     >
@@ -681,7 +715,7 @@ export default function App() {
                 {showTipsLayer && tips.filter(t => t.status === 'New').map(t => (
                   <MapMarker key={`t-${t.id}`} longitude={t.lng} latitude={t.lat} anchor="bottom">
                     <div
-                      onClick={(e) => { e.stopPropagation(); markerClickedRef.current = true; setSelectedMarker({type: 'tip', data: t}); }}
+                      onClick={(e) => { e.stopPropagation(); markerClickedRef.current = true; setSelectedMarker({type: 'tip', data: t}); flyToMarker(t.lng, t.lat); }}
                       className={`map-marker ${selectedMarker?.type === 'tip' && selectedMarker?.data?.id === t.id ? 'selected' : ''}`}
                       style={{ position: 'relative' }}
                     >
@@ -702,7 +736,7 @@ export default function App() {
                 {selectedMarker?.type === 'billboard' && (() => {
                   const b = selectedMarker.data;
                   return (
-                    <MapPopup longitude={b.lng} latitude={b.lat} onClose={() => setSelectedMarker(null)} closeOnClick={false} anchor="bottom" maxWidth="280px">
+                    <MapPopup longitude={b.lng} latitude={b.lat} onClose={handleDeselectMarker} closeOnClick={false} anchor="bottom" maxWidth="280px">
                       <div className="p-2 min-w-[220px]">
                         <div className="flex items-center justify-between mb-2">
                           <span className="font-extrabold text-slate-900">{b.owner_name}</span>
@@ -726,7 +760,7 @@ export default function App() {
                 {selectedMarker?.type === 'case' && (() => {
                   const c = selectedMarker.data;
                   return (
-                    <MapPopup longitude={c.lng} latitude={c.lat} onClose={() => setSelectedMarker(null)} closeOnClick={false} anchor="bottom" maxWidth="260px">
+                    <MapPopup longitude={c.lng} latitude={c.lat} onClose={handleDeselectMarker} closeOnClick={false} anchor="bottom" maxWidth="260px">
                       <div className="p-2 min-w-[200px]">
                         <div className="flex items-center justify-between mb-2">
                           <span className="font-extrabold text-slate-900">Construction Flag</span>
@@ -748,7 +782,7 @@ export default function App() {
                 {selectedMarker?.type === 'tip' && (() => {
                   const t = selectedMarker.data;
                   return (
-                    <MapPopup longitude={t.lng} latitude={t.lat} onClose={() => setSelectedMarker(null)} closeOnClick={false} anchor="bottom" maxWidth="260px">
+                    <MapPopup longitude={t.lng} latitude={t.lat} onClose={handleDeselectMarker} closeOnClick={false} anchor="bottom" maxWidth="260px">
                       <div className="p-2 min-w-[200px]">
                         <span className="font-extrabold text-slate-900 block mb-1">Public Tip</span>
                         <p className="text-xs text-slate-600 italic">"{parseTipCategory(t.description).text.substring(0, 80)}..."</p>
