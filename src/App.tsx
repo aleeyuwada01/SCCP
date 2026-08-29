@@ -81,8 +81,8 @@ export default function App() {
     prevViewRef.current = { ...viewState };
     mapRef.current?.flyTo({
       center: [lng, lat],
-      zoom: 17.5,
-      pitch: 72,
+      zoom: 15,
+      pitch: 65,
       bearing: (viewState.bearing || 0) + 30,
       duration: 2000,
       essential: true
