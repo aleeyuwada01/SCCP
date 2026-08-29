@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import MapGL, { Marker as MapMarker, Popup as MapPopup, NavigationControl } from 'react-map-gl';
+import MapGL, { Marker as MapMarker, Popup as MapPopup, NavigationControl } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Legend } from 'recharts';
 import { MapPin, LayoutDashboard, FileText, AlertTriangle, MessageSquare, Menu, LogOut, ChevronLeft, Search, ChevronDown, ChevronUp, Eye, EyeOff, Filter, Download, Clock, TrendingUp, Shield, Users, X as XIcon } from 'lucide-react';
